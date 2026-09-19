@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "title": "Inception",
+    "year": "2010",
+    "poster": "https://image.tmdb.org/t/p/w500/8j58iEBw9pOXFD2L0nt0ZXeHviB.jpg",
+    "rating": 8.8
+  },
+  {
+    "id": 2,
+    "title": "Interstellar",
+    "year": "2014",
+    "poster": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+    "rating": 8.6
+  },
+  {
+    "id": 3,
+    "title": "The Dark Knight",
+    "year": "2008",
+    "poster": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+    "rating": 9.0
+  },
+  {
+    "id": 4,
+    "title": "Avengers: Endgame",
+    "year": "2019",
+    "poster": "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
+    "rating": 8.4
+  },
+  {
+    "id": 5,
+    "title": "Avatar",
+    "year": "2009",
+    "poster": "https://image.tmdb.org/t/p/w500/jRXYjXNq0Cs2TcJjLkki24MLp7u.jpg",
+    "rating": 7.9
+  },
+  {
+    "id": 6,
+    "title": "Spider-Man: No Way Home",
+    "year": "2021",
+    "poster": "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1R80O0c0h4L4tZ.jpg",
+    "rating": 8.0
+  }
+]
