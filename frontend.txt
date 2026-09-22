@@ -1,0 +1,264 @@
+Day 1 : 
+
+import './App.css'
+
+function App() {
+  return (
+    <div>
+      <h1>Welcome to My Movie App! 🎬</h1>
+      <p>Aaj humara pehla din hai aur humara React app chal raha hai.</p>
+    </div>
+  )
+}
+
+export default App
+
+--------------------------------------------------------------------------------
+ Day : 2
+
+ Class Objectives (Aaj kya sikhana hai?)
+React Components: Navbar aur Home component banana.
+Dummy Data: JSON file se movies laana.
+Props: Ek component se dusre component (MovieCard) mein data pass karna.
+Map Function: Array (list) par loop chala kar bohot saari movies dikhana.
+
+Step 1: Folder Structure Setup karna
+Students se kahein ki wo apne src folder ke andar do naye folders banayein:
+
+components (Isme chhote hisse rahenge jaise Navbar, Card)
+pages (Isme poore page rahenge jaise Home, Login)
+
+------------------------------------------------------------------------------
+
+Day : 2
+
+src/movies.json
+
+[
+  { 
+    "id": 1, 
+    "title": "Inception", 
+    "year": "2010", 
+    "poster": "https://image.tmdb.org/t/p/w500/8j58iEBw9pOXFD2L0nt0ZXeHviB.jpg", 
+    "rating": 8.8 
+  },
+  { 
+    "id": 2, 
+    "title": "Interstellar", 
+    "year": "2014", 
+    "poster": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg", 
+    "rating": 8.6 
+  }
+]
+
+-------------------------------------
+Day : 2
+
+
+step : 2 : 
+
+src/index.css
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #0f0f13;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+
+.app { min-height: 100vh; }
+-------------------------------------
+
+Day : 2
+
+Step 3: Navbar Component Banana
+
+src/components ke andar Navbar.jsx
+------------------------------------
+
+import React from 'react';
+import './Navbar.css';
+
+const Navbar = () => {
+  return (
+    <nav className="navbar">
+      <div className="navbar-logo">
+        <span className="logo-icon">🎬</span>
+        <h1>CineVerse</h1>
+      </div>
+      <div className="navbar-links">
+        <a href="#home">Home</a>
+        <a href="#watchlist">My Watchlist</a>
+        <button className="login-btn">Login</button>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+------------------------------------------------------
+
+src/components/Navbar.css (Premium Glassmorphism Style):
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 4rem;
+  background: rgba(15, 15, 19, 0.85);
+  backdrop-filter: blur(15px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.navbar-logo { display: flex; align-items: center; gap: 0.8rem; cursor: pointer; }
+.logo-icon { font-size: 2.2rem; filter: drop-shadow(0 0 5px rgba(255,65,108,0.5)); }
+.navbar-logo h1 { font-size: 2rem; font-weight: 900; background: linear-gradient(90deg, #ff4b2b, #ff416c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+
+.navbar-links { display: flex; align-items: center; gap: 2.5rem; }
+.navbar-links a { color: #a0a0a0; text-decoration: none; font-weight: 600; }
+.navbar-links a:hover { color: #ffffff; }
+
+.login-btn {
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
+  color: white; border: none; padding: 0.7rem 1.8rem; border-radius: 30px; font-weight: 700; cursor: pointer;
+}
+
+------------------------------------------------------
+
+
+Step 4: MovieCard Component Banana ( Using Props )
+
+src/components ke andar MovieCard.jsx
+-----------------------------------------------------
+import React from 'react';
+import './MovieCard.css';
+
+// Yaha hum { movie } as a prop receive kar rahe hain
+const MovieCard = ({ movie }) => {
+  return (
+    <div className="movie-card">
+      <div className="movie-poster">
+        <img src={movie.poster} alt={movie.title} />
+      </div>
+      <div className="movie-info">
+        <h3>{movie.title}</h3>
+        <div className="movie-meta">
+          <span>{movie.year}</span>
+          <span className="rating">⭐ {movie.rating}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MovieCard;
+--------------------------------------------------------
+
+src/components/MovieCard.css:
+
+.movie-card {
+  background: #1e1e24; border-radius: 20px; overflow: hidden;
+  transition: all 0.4s ease; cursor: pointer; position: relative;
+}
+.movie-card:hover { transform: translateY(-15px) scale(1.04); }
+
+.movie-poster { position: relative; width: 100%; height: 400px; }
+.movie-poster img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.movie-card:hover .movie-poster img { transform: scale(1.1); }
+
+.movie-info {
+  padding: 1.5rem; position: absolute; bottom: 0; left: 0; width: 100%;
+  background: linear-gradient(to top, rgba(15,15,19,1) 0%, rgba(15,15,19,0.9) 50%, transparent 100%);
+  z-index: 5; transition: transform 0.3s ease;
+}
+.movie-card:hover .movie-info { transform: translateY(10px); opacity: 0; }
+.movie-info h3 { margin: 0 0 0.5rem 0; font-size: 1.3rem; color: #fff; font-weight: 800; }
+.movie-meta { display: flex; justify-content: space-between; color: #a0a0a0; font-weight: 600; }
+.rating { color: #ffd700; }
+
+---------------------------------------------------------
+
+Step 5: Home Page
+
+src/pages/Home.jsx:
+----------------------------------------------------------
+
+
+import React from 'react';
+import MovieCard from '../components/MovieCard';
+import moviesData from '../movies.json';
+import './Home.css';
+
+const Home = () => {
+  const featuredMovie = moviesData[1] || moviesData[0];
+  
+  return (
+    <div className="home-container">
+      <div className="hero-section" style={{ backgroundImage: `url(${featuredMovie.poster})` }}>
+        <div className="hero-overlay">
+          <h2>{featuredMovie.title}</h2>
+        </div>
+      </div>
+      
+      <div className="movies-grid">
+        {moviesData.map((movie) => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Home;
+
+---------------------------------------------------------
+
+src/pages/Home.css:
+
+.home-container { padding: 0 4rem 4rem 4rem; animation: fadeIn 0.8s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.hero-section {
+  width: 100%; height: 60vh; border-radius: 24px; margin-top: 1rem; margin-bottom: 4rem;
+  background-size: cover; background-position: center 20%; position: relative;
+}
+.hero-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to right, rgba(15, 15, 19, 1) 0%, rgba(15, 15, 19, 0.7) 50%, rgba(15, 15, 19, 0) 100%);
+  display: flex; flex-direction: column; justify-content: center; padding: 5rem;
+}
+.hero-overlay h2 { font-size: 4.5rem; margin: 0; font-weight: 900; }
+
+.movies-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 3rem;
+}
+---------------------------------------------------------------------------------------------
+
+
+Step 6: App.jsx
+
+import React from 'react';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+
+function App() {
+  return (
+    <div className="app">
+      <Navbar />
+      <Home />
+    </div>
+  );
+}
+
+export default App;
+--------------------------------------------------
+
