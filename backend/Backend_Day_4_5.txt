@@ -1,0 +1,125 @@
+ DAY 4: Backend Setup & Server Connection
+ ----------------------------------------------------****
+Class ka Maqsad (Goal): Node.js server banana aur MongoDB database se jodna.
+
+Step 1: Packages Install Karna Terminal mein backend folder ke andar ye commands chalwayein:
+---------------------------------------------------------------------------------------------
+
+npm init -y
+npm install express mongoose dotenv cors
+npm install -D nodemon
+------------------------------------------
+
+Step 2: .env File Banana (Secret File) backend folder mein .env naam ki file banwayein aur ye code dalwayein:
+
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/movie_app_db
+
+-------------------------------------------------
+
+Step 3: server.js File Banana (Main Server) backend folder mein server.js banwayein (Ye humare backend ka dil hai):
+
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+
+// Middlewares
+app.use(cors());
+app.use(express.json()); 
+
+// Database Connection
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log(" MongoDB Connected Successfully!"))
+  .catch((err) => console.log(" MongoDB Connection Failed:", err));
+
+// Basic Test Route
+app.get('/', (req, res) => {
+  res.send('🎬 Movie App Backend is Running!');
+});
+
+// Server Start
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(` Server is running on port ${PORT}`);
+});
+
+ Class Test: Terminal mein npx nodemon server.js likhkar check karein ki "✅ MongoDB Connected" print ho raha hai ya nahi.
+
+----------------------------------------------------------
+ DAY 5: MVC Architecture & Movie API
+------------------------------------------*****
+Class ka Maqsad (Goal): Professional folder structure (MVC) banana aur pehli Movie API create karna.
+
+Step 1: Folders Banana backend folder ke andar 3 naye folders banwayein: models, controllers, aur routes.
+-------------------------------------------------------------------------
+Step 2: Database Blueprint (models/Movie.js)
+
+const mongoose = require('mongoose');
+
+const movieSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  year: { type: String, required: true },
+  poster: { type: String, required: true },
+  rating: { type: Number, required: true }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Movie', movieSchema);
+
+----------------------------------------------------------
+
+Step 3:  Logic (controllers/movieController.js)
+
+const Movie = require('../models/Movie');
+
+const getMovies = async (req, res) => {
+  try {
+    const movies = await Movie.find();
+    res.status(200).json(movies);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+const addMovie = async (req, res) => {
+  try {
+    const { title, year, poster, rating } = req.body;
+    const newMovie = new Movie({ title, year, poster, rating });
+    await newMovie.save();
+    res.status(201).json({ message: "Movie Added!", movie: newMovie });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add movie", error });
+  }
+};
+
+module.exports = { getMovies, addMovie };
+
+------------------------------------------------
+
+
+Step 4: API Links (routes/movieRoutes.js)
+
+const express = require('express');
+const router = express.Router();
+const { getMovies, addMovie } = require('../controllers/movieController');
+
+router.get('/', getMovies);
+router.post('/', addMovie);
+
+module.exports = router;
+
+-------------------------------------------------
+
+Step 5: Server ko Update Karna (server.js) Apni server.js file kholiye aur sabse neeche
+(app.listen se theek pehle)ye code add karein:
+
+// API Routes 
+const movieRoutes = require('./routes/movieRoutes');
+app.use('/api/movies', movieRoutes);
+
+----------------------------------------------------
+
+Day 6 : 
+

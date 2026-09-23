@@ -21,7 +21,11 @@ app.get('/', (req, res) => {
   res.send('🎬 Movie App Backend is Running!');
 });
 
-// 4. Start Server
+// 4. API Routes (Yahan humne apna Movie wala rasta jod diya)
+const movieRoutes = require('./routes/movieRoutes');
+app.use('/api/movies', movieRoutes);
+
+// 5. Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
