@@ -21,9 +21,12 @@ app.get('/', (req, res) => {
   res.send('🎬 Movie App Backend is Running!');
 });
 
-// 4. API Routes (Yahan humne apna Movie wala rasta jod diya)
+// 4. API Routes (Movie and Auth)
 const movieRoutes = require('./routes/movieRoutes');
+const authRoutes = require('./routes/authRoutes');
+
 app.use('/api/movies', movieRoutes);
+app.use('/api/auth', authRoutes);
 
 // 5. Start Server
 const PORT = process.env.PORT || 5000;

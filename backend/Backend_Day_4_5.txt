@@ -51,7 +51,7 @@ app.listen(PORT, () => {
 ----------------------------------------------------------
  DAY 5: MVC Architecture & Movie API
 ------------------------------------------*****
-Class ka Maqsad (Goal): Professional folder structure (MVC) banana aur pehli Movie API create karna.
+(Goal): Professional folder structure (MVC) banana aur pehli Movie API create karna.
 
 Step 1: Folders Banana backend folder ke andar 3 naye folders banwayein: models, controllers, aur routes.
 -------------------------------------------------------------------------
@@ -122,4 +122,137 @@ app.use('/api/movies', movieRoutes);
 ----------------------------------------------------
 
 Day 6 : 
+
+DAY 6: JWT User Authentication (Login & Signup)
+
+User ka naya account banana (Signup) aur usko securely Login karwana.
+
+Step 1: Security Packages Install Karna
+backend folder ke andar naya terminal open karein aur ye command chalwayein:
+
+----> npm install bcryptjs jsonwebtoken
+
+(Class mein batayein: bcryptjs humare password ko database mein chupata (Hash karta)
+hai taaki koi use chura na sake. Aur jsonwebtoken ek digital pass 
+(Token) banata hai jo batata hai ki user login ho chuka hai).
+
+--------------------------------------------------------------------------------------
+
+Step 2: .env file mein Secret Key dalna
+Apni backend/.env file kholiye aur sabse neeche ek "Secret Key" daliye.
+ Ye key JWT Token generate karne ke kaam aati hai.
+
+env : 
+
+JWT_SECRET=super_secret_movie_key_123
+
+------------------------------------------------------------------------------------
+
+1. Ye super_secret_movie_key_123 kahan se aaya?
+
+ aap .env file mein apni marzi ka koi bhi lamba password likh sakte hain. 
+Jaise: JWT_SECRET=mera_apna_password_007 ya JWT_SECRET=koi_bhi_random_text_12345.
+---------------------------------------------------------------------------------------
+Iska Kaam Kya Hai? Ye ek "Master Key" ya "Company ki asali Stamp" ki tarah kaam karta hai. Jab user login 
+karta hai, toh jsonwebtoken package ek lamba sa token banata hai, aur fir is Secret Key ka use karke us token
+par ek mathematical taala (lock) laga deta hai. Kyunki ye secret key sirf humare backend ko pata hai, 
+isliye koi bhi Hacker apna nakli token generate nahi kar sakta. (Agar aap .env file mein 123 ko hatakar 
+124 kar denge, toh puraane saare tokens turant invalid ho jayenge aur sabhi users logout ho jayenge!)
+
+------------------------------------------------------------------------------------
+
+Step 3: User Model Banana (models/User.js)
+
+Nayi file backend/models/User.js banwayein (Ye Database ko batayega ki naya User kaisa dikhega):
+
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true }, // Ek email se ek hi account banega
+  password: { type: String, required: true },
+  role: { type: String, default: 'user' } // By default sab normal user honge
+}, { timestamps: true });
+
+module.exports = mongoose.model('User', userSchema);
+
+-----------------------------------------------------------------------------------------
+
+Step 4: Auth Logic Likhna (controllers/authController.js)
+
+Nayi file backend/controllers/authController.js banwayein (Ye humara asali dimag hai):
+
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+// 1. SIGNUP (Register) Logic
+const register = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Check karo email pehle se exist toh nahi karti
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ message: "User already exists!" });
+
+    // Password ko secure (Hash) karna
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Database mein naya user save karo
+    const newUser = new User({ name, email, password: hashedPassword });
+    await newUser.save();
+    
+    res.status(201).json({ message: "User Registered Successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+-----------------------
+
+// 2. LOGIN Logic
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Email check karo ki database mein hai ya nahi
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found!" });
+
+    // Password check karo (Aaya hua password VS Database ka hashed password)
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return res.status(400).json({ message: "Invalid Password!" });
+
+    // JWT Token (Digital Pass) banao
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1d' } // 1 din baad logout ho jayega
+    );
+
+    res.status(200).json({ message: "Login Successful!", token, user: { name: user.name, email: user.email } });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+module.exports = { register, login };
+
+-----------------------------------------------------------------------------------
+
+Step 5: Routes Banana (routes/authRoutes.js)
+
+Nayi file backend/routes/authRoutes.js banwayein (Ye humare API ke raste hain):
+
+const express = require('express');
+const router = express.Router();
+const { register, login } = require('../controllers/authController');
+
+router.post('/register', register);
+router.post('/login', login);
+
+module.exports = router;
+
+
 
