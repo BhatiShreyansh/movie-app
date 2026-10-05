@@ -1,0 +1,186 @@
+DAY 7: Watchlist APIs & JWT Middleware
+
+ Ek Security Guard (Middleware) banana jo check karega ki user logged-in hai ya nahi,
+aur fir us user ke liye personal "Watchlist" banana.
+
+Step 1: Security Guard Banana (Middleware)
+
+
+1. backend folder ke andar ek naya folder banwayein middleware aur usme ek file banayein authMiddleware.js.
+
+2.  Ye guard har request aane par Token verify karega.
+
+----------------------------------------------------------------------------------------------------------
+backend/middleware/authMiddleware.js
+-----------------------------------------
+
+const jwt = require('jsonwebtoken');
+
+const protect = (req, res, next) => {
+  let token = req.headers.authorization; 
+
+  if (!token || !token.startsWith('Bearer')) {
+    return res.status(401).json({ message: "Bina Login ke aap andar nahi aa sakte! (No Token)" });
+  }
+
+  try {
+    // "Bearer eyJhbGc..." mein se sirf token nikalna
+    token = token.split(' ')[1];
+    
+    // Secret key se token ko verify karna
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Request ke andar user ki asali ID attach kar dena
+    req.user = decoded; 
+    
+    next(); // Security check pass! Aage Controller ke paas jao
+  } catch (error) {
+    res.status(401).json({ message: "Token Invalid ya Expire ho chuka hai!" });
+  }
+};
+
+module.exports = { protect };
+
+-----------------------------------------------------------------------------------
+
+Step 2: Watchlist Model (Database Blueprint)
+
+backend/models/Watchlist.js
+---------------------------
+Ye table sirf 2 cheezon ka link banayegi: Kis User ne Konsi Movie save ki hai.
+
+-----------------------------------------------------------------------------
+
+const mongoose = require('mongoose');
+
+const watchlistSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Ye 'User' table se link hai
+    required: true
+  },
+  movie: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Movie', // Ye 'Movie' table se link hai
+    required: true
+  }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Watchlist', watchlistSchema);
+
+
+-------------------------------------------------------------
+
+
+Step 3: Watchlist Logic (controllers/watchlistController.js)
+
+const Watchlist = require('../models/Watchlist');
+-----------------------------------------------------
+// 1. Apni Watchlist ki saari movies mangwana (GET)
+------------------------------------------------------
+const getWatchlist = async (req, res) => {
+  try {
+    // .populate('movie') ka matlab hai Movie ki sirf ID nahi, poori details (Poster, Title) bhej do!
+    const watchlist = await Watchlist.find({ user: req.user.id }).populate('movie');
+    res.status(200).json(watchlist);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+----------------------------------------------------------------
+// 2. Watchlist mein nayi movie daalna (POST)
+----------------------------------------------------------------
+const addToWatchlist = async (req, res) => {
+  try {
+    const { movieId } = req.body;
+
+    // Check karein ki user ne ye movie pehle se toh save nahi kar rakhi
+    const alreadySaved = await Watchlist.findOne({ user: req.user.id, movie: movieId });
+    if (alreadySaved) return res.status(400).json({ message: "Movie already in watchlist!" });
+
+    const watchlistItem = new Watchlist({ user: req.user.id, movie: movieId });
+    await watchlistItem.save();
+    
+    res.status(201).json({ message: "Movie added to watchlist!", watchlistItem });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
+module.exports = { getWatchlist, addToWatchlist };
+
+--------------------------------------------------------------------------------------------
+Step 4: Watchlist Routes (routes/watchlistRoutes.js)
+
+backend/routes/watchlistRoutes.js
+------------------------------------------------------
+
+Yahan hum har link ke beech mein apna protect guard laga rahe hain, 
+taaki bina login koi yahan tak na pahuch sake
+
+--------------------------------------------------------------------------------------------
+
+const express = require('express');
+const router = express.Router();
+const { getWatchlist, addToWatchlist } = require('../controllers/watchlistController');
+const { protect } = require('../middleware/authMiddleware'); // Guard ko bula liya
+
+// Har route par Guard (protect) laga diya
+router.get('/', protect, getWatchlist);
+router.post('/', protect, addToWatchlist);
+
+module.exports = router;
+
+
+-----------------------------------------------------------------------------------------
+
+Step 5: Server.js ko Update karna
+------------------------------------
+backend/server.js file kholiye aur sabse neeche update karein:
+--------------------------------------------------------------
+
+// 4. API Routes (Movie, Auth, and Watchlist)
+const movieRoutes = require('./routes/movieRoutes');
+const authRoutes = require('./routes/authRoutes');
+const watchlistRoutes = require('./routes/watchlistRoutes'); // NAYI LINE
+
+app.use('/api/movies', movieRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/watchlist', watchlistRoutes); // NAYI LINE
+
+---------------------------------------------------------
+
+
+postman checking for watchlist : 
+
+--------------------------------
+Step 1: Apna 'Token' (Digital Pass) lijiye
+Postman mein Login wali tab par jaaiye. (POST select karein, URL http://localhost:5000/api/auth/login)
+Body mein apna email aur password dekar Send dabayein.
+Neeche result mein jo "token": "eyJhbGciOi..." aayega, usme sirf
+us lambe ajeeb se text ko (bina double quotes ke) aaram se Copy kar lein.
+
+--------------------------------------------------------------------------------------------------------------
+Step 2: Kisi Ek Movie ki 'ID' lijiye (Jo save karni hai)
+Postman mein ek aur nayi tab kholein aur GET select karke http://localhost:5000/api/movies par Send dabayein.
+Result mein saari movies ki list aa jayegi. Kisi bhi ek movie ki _id (jaise "651a2b...") ko Copy kar lein.
+
+---------------------------------------------------------------------
+
+Step 3: Nayi Movie Watchlist mein Daalein (POST)
+Dhyaan se ye steps karein:
+
+Postman mein ek bilkul Nayi Tab (+) kholiye.
+Sabse left wale dropdown se POST select karein.
+URL box mein sirf aur sirf itna likhein: http://localhost:5000/api/watchlist (Dhyan rahe, box ke andar POST word na likha ho).
+Token Dikhayein: URL box ke neeche bohot saari tabs hoti hain, unme se Authorization tab dabayein.
+'Type' menu mein se Bearer Token select karein. Right side wale khali box mein (jahan 'Token' likha hota hai) apna Step 1 wala lamba sa Token Paste kar dein.
+Movie ID Bhejein: Ab uske theek bagal mein Body tab par click karein ->
+neeche raw gol button par click karein -> dropdown se JSON select karein. Khali dabbe (text area)
+mein ye likhein:
+-----------------------------------------------------------------
+
+{
+  "movieId": "6ab3b697da44eadd6165076e"
+}
+
