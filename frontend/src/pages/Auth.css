@@ -1,0 +1,134 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 85vh;
+  padding: 2rem;
+  /* Page load hone par smooth fade in animation */
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.auth-box {
+  background: rgba(20, 20, 25, 0.7);
+  padding: 3.5rem;
+  border-radius: 24px;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  /* Premium Shadow */
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Box ke piche ek halki si Pink glowing light (Apple Style) */
+.auth-box::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 65, 108, 0.15) 0%, transparent 50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.auth-box h2 {
+  margin-bottom: 2.5rem;
+  font-size: 2.3rem;
+  background: linear-gradient(135deg, #ffffff, #ff416c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+.auth-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.auth-box input {
+  width: 100%;
+  padding: 1.2rem 1.5rem;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.auth-box input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+
+/* Jab user type karne ke liye click kare (Interactive glow) */
+.auth-box input:focus {
+  outline: none;
+  border-color: #ff416c;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 65, 108, 0.3);
+  transform: translateY(-3px); /* Thoda sa upar uthega */
+}
+
+.auth-btn {
+  margin-top: 1.5rem;
+  padding: 1.2rem;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  /* Button ke neeche glowing shadow */
+  box-shadow: 0 10px 25px rgba(255, 65, 108, 0.4);
+}
+
+/* Jab mouse button ke upar jaye */
+.auth-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(255, 65, 108, 0.6);
+}
+
+/* Jab button click ho */
+.auth-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 5px 15px rgba(255, 65, 108, 0.3);
+}
+
+.auth-box p {
+  margin-top: 2.5rem;
+  color: #a0a0a0;
+  font-size: 1rem;
+}
+
+.auth-box a {
+  color: #ff416c;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  margin-left: 8px;
+}
+
+/* Link par hover karne se glow aayega */
+.auth-box a:hover {
+  color: #ff4b2b;
+  text-shadow: 0 0 12px rgba(255, 65, 108, 0.7);
+}
