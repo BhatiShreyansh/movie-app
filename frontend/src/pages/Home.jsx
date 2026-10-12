@@ -1,22 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
-import moviesData from '../movies.json';
 import './Home.css';
+// import moviesData from '../movies.json'; -> Ye fake data ab hata diya gaya hai!
 
-// searchQuery prop App.jsx se aayega
 const Home = ({ searchQuery }) => {
-  const featuredMovie = moviesData[1] || moviesData[0];
+  // Naya state: Asali movies store karne ke liye
+  const [movies, setMovies] = useState([]);
 
-  // Agar user kuch search kar raha hai toh movies filter karo, varna saari dikhao
-  const filteredMovies = moviesData.filter(movie => 
+  // Component load hote hi backend se data mangwana
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/movies');
+        const data = await response.json();
+        setMovies(data); // Backend se aayi asali movies yahan save kar li
+      } catch (error) {
+        console.error("Backend Server band hai, isliye movies nahi aayi!");
+      }
+    };
+
+    fetchMovies();
+  }, []); // Khali array matlab sirf ek baar mangwana hai
+
+  // Pehli movie ko hero banner mein dikhana
+  const featuredMovie = movies.length > 0 ? movies[0] : null;
+
+  // Search filter
+  const filteredMovies = movies.filter(movie => 
     movie.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="home-container">
       
-      {/* Agar user search nahi kar raha tabhi Hero Banner dikhao */}
-      {!searchQuery && (
+      {/* Agar search nahi ho raha aur kam-se-kam 1 movie hai, tabhi Banner dikhao */}
+      {!searchQuery && featuredMovie && (
         <div 
           className="hero-section"
           style={{ backgroundImage: `url(${featuredMovie.poster})` }}
@@ -34,21 +52,20 @@ const Home = ({ searchQuery }) => {
       )}
       
       <div className="section-header" style={{ marginTop: searchQuery ? '2rem' : '0' }}>
-        {/* Agar search ho raha hai toh "Search Results" dikhao */}
         <h3>{searchQuery ? `Search Results for "${searchQuery}"` : 'Popular Movies'}</h3>
         <div className="accent-line"></div>
       </div>
 
       <div className="movies-grid">
-        {/* Agar movies hain toh dikhao, warna "No movies found" dikhao */}
         {filteredMovies.length > 0 ? (
           filteredMovies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
+            // Dhyan rakhein, asali database ki ID ko '_id' likhte hain
+            <MovieCard key={movie._id} movie={movie} /> 
           ))
         ) : (
           <div className="no-results">
-            <h2>No movies found! 😢</h2>
-            <p>Try searching for a different name.</p>
+            <h2>No movies found in Database! 😢</h2>
+            <p>Pehle Postman se database mein kuch movies add karein.</p>
           </div>
         )}
       </div>
