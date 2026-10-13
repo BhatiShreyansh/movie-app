@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import TrailerModal from '../components/TrailerModal'; // Trailer popup
 import './Watchlist.css';
 
 const Watchlist = () => {
   const [watchlist, setWatchlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTrailerMovie, setSelectedTrailerMovie] = useState(null);
   const navigate = useNavigate();
 
   // 1. User ki Watchlist Backend se load karna
@@ -100,12 +102,20 @@ const Watchlist = () => {
                 <div className="watchlist-poster">
                   <img src={movie.poster} alt={movie.title} />
                   <div className="watchlist-card-overlay">
-                    <button 
-                      className="remove-btn"
-                      onClick={() => handleRemove(item._id)}
-                    >
-                      🗑️ Remove
-                    </button>
+                    <div className="watchlist-overlay-buttons">
+                      <button 
+                        className="watchlist-trailer-btn"
+                        onClick={() => setSelectedTrailerMovie(movie)}
+                      >
+                        ▶ Watch Trailer
+                      </button>
+                      <button 
+                        className="remove-btn"
+                        onClick={() => handleRemove(item._id)}
+                      >
+                        🗑️ Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -131,6 +141,12 @@ const Watchlist = () => {
           </Link>
         </div>
       )}
+
+      {/* Trailer Modal Popup */}
+      <TrailerModal 
+        movie={selectedTrailerMovie} 
+        onClose={() => setSelectedTrailerMovie(null)} 
+      />
     </div>
   );
 };

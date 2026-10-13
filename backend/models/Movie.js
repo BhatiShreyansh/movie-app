@@ -18,6 +18,10 @@ const movieSchema = new mongoose.Schema({
   rating: {
     type: Number,
     required: true
+  },
+  trailer: {
+    type: String, // YouTube video URL ya Video ID
+    default: ""
   }
 }, { timestamps: true }); // timestamps se created_at date automatically save ho jayegi
 

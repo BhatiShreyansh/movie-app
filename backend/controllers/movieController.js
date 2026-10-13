@@ -15,10 +15,10 @@ const getMovies = async (req, res) => {
 const addMovie = async (req, res) => {
   try {
     // Postman ya Frontend se aaya hua data pakdo
-    const { title, year, poster, rating } = req.body;
+    const { title, year, poster, rating, trailer } = req.body;
 
     // Nayi movie create karo (Blueprint ke hisaab se)
-    const newMovie = new Movie({ title, year, poster, rating });
+    const newMovie = new Movie({ title, year, poster, rating, trailer: trailer || "" });
     
     // Database mein permanently save karo
     await newMovie.save();

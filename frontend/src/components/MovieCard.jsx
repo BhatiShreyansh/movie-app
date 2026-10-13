@@ -2,27 +2,26 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import './MovieCard.css';
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, onWatchTrailer }) => {
 
   // Watchlist me save karne ka function
-  const handleSaveToWatchlist = async () => {
-    // 1. Check karo ki user logged in hai ya nahi?
+  const handleSaveToWatchlist = async (e) => {
+    e.stopPropagation();
     const token = localStorage.getItem('token');
     
     if (!token) {
       toast.error('Please login to save movies! 🔒');
-      return; // Agar login nahi hai, toh code yahin rok do
+      return;
     }
 
-    // 2. Logged-in user ke liye Watchlist me save karne ki Request bhejna
     try {
       const response = await fetch('http://localhost:5000/api/watchlist', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Guard ko pass dikhana
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ movieId: movie._id }) // Backend ki asali _id
+        body: JSON.stringify({ movieId: movie._id })
       });
 
       const data = await response.json();
@@ -30,7 +29,7 @@ const MovieCard = ({ movie }) => {
       if (response.ok) {
         toast.success('Movie saved to Watchlist! ❤️');
       } else {
-        toast.info(data.message); // Agar movie pehle se save hai
+        toast.info(data.message);
       }
     } catch (error) {
       toast.error('Server is not responding!');
@@ -42,10 +41,20 @@ const MovieCard = ({ movie }) => {
       <div className="movie-poster">
         <img src={movie.poster} alt={movie.title} />
         <div className="overlay">
-          {/* Button par click hone se handleSaveToWatchlist call hoga */}
-          <button className="watchlist-btn" onClick={handleSaveToWatchlist}>
-            ❤️ Add to Watchlist
-          </button>
+          <div className="overlay-buttons">
+            <button 
+              className="trailer-card-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onWatchTrailer) onWatchTrailer(movie);
+              }}
+            >
+              ▶ Watch Trailer
+            </button>
+            <button className="watchlist-btn" onClick={handleSaveToWatchlist}>
+              ❤️ Add to Watchlist
+            </button>
+          </div>
         </div>
       </div>
       <div className="movie-info">

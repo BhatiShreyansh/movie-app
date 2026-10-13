@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
+import TrailerModal from '../components/TrailerModal'; // Naya Trailer Modal
 import './Home.css';
-// import moviesData from '../movies.json'; -> Ye fake data ab hata diya gaya hai!
 
 const Home = ({ searchQuery }) => {
-  // Naya state: Asali movies store karne ke liye
   const [movies, setMovies] = useState([]);
+  // Naya state: Kaunsi movie ka trailer open karna hai
+  const [selectedTrailerMovie, setSelectedTrailerMovie] = useState(null);
 
   // Component load hote hi backend se data mangwana
   useEffect(() => {
@@ -13,14 +14,14 @@ const Home = ({ searchQuery }) => {
       try {
         const response = await fetch('http://localhost:5000/api/movies');
         const data = await response.json();
-        setMovies(data); // Backend se aayi asali movies yahan save kar li
+        setMovies(data);
       } catch (error) {
         console.error("Backend Server band hai, isliye movies nahi aayi!");
       }
     };
 
     fetchMovies();
-  }, []); // Khali array matlab sirf ek baar mangwana hai
+  }, []);
 
   // Pehli movie ko hero banner mein dikhana
   const featuredMovie = movies.length > 0 ? movies[0] : null;
@@ -33,7 +34,7 @@ const Home = ({ searchQuery }) => {
   return (
     <div className="home-container">
       
-      {/* Agar search nahi ho raha aur kam-se-kam 1 movie hai, tabhi Banner dikhao */}
+      {/* Hero Banner */}
       {!searchQuery && featuredMovie && (
         <div 
           className="hero-section"
@@ -44,8 +45,19 @@ const Home = ({ searchQuery }) => {
             <h2>{featuredMovie.title}</h2>
             <p>Experience the most thrilling adventure of the year. Add to your watchlist now and never miss a moment of cinematic brilliance.</p>
             <div className="hero-buttons">
-              <button className="play-btn">▶ Watch Trailer</button>
-              <button className="info-btn">ℹ More Info</button>
+              {/* Featured movie ka trailer play karna */}
+              <button 
+                className="play-btn"
+                onClick={() => setSelectedTrailerMovie(featuredMovie)}
+              >
+                ▶ Watch Trailer
+              </button>
+              <button 
+                className="info-btn"
+                onClick={() => setSelectedTrailerMovie(featuredMovie)}
+              >
+                ℹ More Info
+              </button>
             </div>
           </div>
         </div>
@@ -59,8 +71,11 @@ const Home = ({ searchQuery }) => {
       <div className="movies-grid">
         {filteredMovies.length > 0 ? (
           filteredMovies.map((movie) => (
-            // Dhyan rakhein, asali database ki ID ko '_id' likhte hain
-            <MovieCard key={movie._id} movie={movie} /> 
+            <MovieCard 
+              key={movie._id} 
+              movie={movie} 
+              onWatchTrailer={(m) => setSelectedTrailerMovie(m)}
+            /> 
           ))
         ) : (
           <div className="no-results">
@@ -69,6 +84,12 @@ const Home = ({ searchQuery }) => {
           </div>
         )}
       </div>
+
+      {/* Trailer Modal Popup */}
+      <TrailerModal 
+        movie={selectedTrailerMovie} 
+        onClose={() => setSelectedTrailerMovie(null)} 
+      />
     </div>
   );
 };

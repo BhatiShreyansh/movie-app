@@ -99,15 +99,46 @@
   opacity: 1;
 }
 
+.watchlist-overlay-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: center;
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.watchlist-card:hover .watchlist-overlay-buttons {
+  transform: translateY(0);
+}
+
+.watchlist-trailer-btn {
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.6rem;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+}
+
+.watchlist-trailer-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 25px rgba(255, 65, 108, 0.7);
+}
+
 /* Remove Button */
 .remove-btn {
   background: rgba(255, 65, 108, 0.2);
   border: 1px solid #ff416c;
   color: white;
-  padding: 0.8rem 1.6rem;
+  padding: 0.75rem 1.6rem;
   border-radius: 30px;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   backdrop-filter: blur(8px);
   transition: all 0.3s ease;
