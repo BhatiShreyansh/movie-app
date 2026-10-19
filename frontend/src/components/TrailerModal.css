@@ -84,6 +84,33 @@
   font-weight: 600;
 }
 
+.trailer-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.open-yt-btn {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  color: #ff4d4d;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+}
+
+.open-yt-btn:hover {
+  background: #ff0000;
+  color: white;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
 /* Close Button */
 .trailer-close-btn {
   background: rgba(255, 255, 255, 0.08);

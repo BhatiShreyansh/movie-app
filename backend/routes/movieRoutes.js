@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { getMovies, addMovie } = require('../controllers/movieController');
+const { getMovies, addMovie, deleteMovie } = require('../controllers/movieController');
+const { protect, adminOnly } = require('../middleware/authMiddleware');
 
-// Jab koi '/api/movies' par GET request karega, toh getMovies function chalega
+// 1. Movies dekhna sabke liye open hai (Public)
 router.get('/', getMovies);
 
-// Jab koi '/api/movies' par POST request karega, toh addMovie function chalega
-router.post('/', addMovie);
+// 2. Movie add karna sirf Admin ke liye allowed hai (Protected)
+router.post('/', protect, adminOnly, addMovie);
+
+// 3. Movie delete karna sirf Admin ke liye allowed hai (Protected)
+router.delete('/:id', protect, adminOnly, deleteMovie);
 
 module.exports = router;

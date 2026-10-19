@@ -38,6 +38,12 @@ const Navbar = ({ onSearch }) => {
         {/* Agar user logged in hai toh usko Watchlist aur Logout dikhao */}
         {user ? (
           <>
+            {/* 🔥 Sirf Admin ko dikhne wala link */}
+            {user.role === 'admin' && (
+              <Link to="/admin" className="admin-nav-link">
+                👑 Admin Panel
+              </Link>
+            )}
             <Link to="/watchlist">My Watchlist</Link>
             <span className="user-name" style={{ color: '#ff416c', fontWeight: 'bold' }}>Hi, {user.name}</span>
             <button className="login-btn" onClick={handleLogout}>Logout</button>

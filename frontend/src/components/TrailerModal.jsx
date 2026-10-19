@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import './TrailerModal.css';
 
-// Known popular movie fallbacks (taaki puraani movies bina trailer field ke bhi chal sakein)
+// Fallback trailers agar movie ke pass apna trailer na ho
 const FALLBACK_TRAILERS = {
   inception: 'YoHD9XEInc0',
   interstellar: 'zSWdZVtXT7E',
@@ -15,45 +15,49 @@ const FALLBACK_TRAILERS = {
   dune: 'n9xhJrPXop4'
 };
 
-// YouTube Link ya ID se direct Embed URL nikalne ka helper
-const getEmbedUrl = (trailerUrl, title) => {
-  // 1. Agar movie ke pass apna trailer URL/ID hai
+// 11-character Video ID nikaalne ka function
+const extractVideoId = (trailerUrl, title) => {
   if (trailerUrl && typeof trailerUrl === 'string' && trailerUrl.trim() !== '') {
-    const trimmed = trailerUrl.trim();
-    // YouTube link formats match karein:
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = trimmed.match(regExp);
+    let trimmed = trailerUrl.trim();
 
-    if (match && match[2].length === 11) {
-      return `https://www.youtube.com/embed/${match[2]}?autoplay=1&rel=0`;
+    // 1. Agar iframe tag paste kiya ho
+    const iframeMatch = trimmed.match(/src=["'](.*?)["']/);
+    if (iframeMatch) {
+      trimmed = iframeMatch[1];
     }
-    // Agar direct 11-char ID di hai (jaise "YoHD9XEInc0")
+
+    // 2. YouTube URL formats match karein (watch, shorts, youtu.be, embed)
+    const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/|live\/))([\w-]{11})/;
+    const match = trimmed.match(regExp);
+    if (match && match[1]) {
+      return match[1];
+    }
+
+    // 3. Agar direct 11-char ID di ho
     if (trimmed.length === 11) {
-      return `https://www.youtube.com/embed/${trimmed}?autoplay=1&rel=0`;
+      return trimmed;
     }
   }
 
-  // 2. Fallback check: movie title match
+  // 4. Fallback check: title
   if (title) {
     const cleanTitle = title.toLowerCase().trim();
     for (const [key, videoId] of Object.entries(FALLBACK_TRAILERS)) {
       if (cleanTitle.includes(key)) {
-        return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+        return videoId;
       }
     }
   }
 
-  // 3. Default blockbuster trailer fallback (Inception)
-  return 'https://www.youtube.com/embed/YoHD9XEInc0?autoplay=1&rel=0';
+  // Default Fallback ID
+  return 'YoHD9XEInc0';
 };
 
 const TrailerModal = ({ movie, onClose }) => {
-  // Keyboard Escape key dabane se modal band hona
+  // Escape key listener
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
+      if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -61,7 +65,10 @@ const TrailerModal = ({ movie, onClose }) => {
 
   if (!movie) return null;
 
-  const embedUrl = getEmbedUrl(movie.trailer, movie.title);
+  const videoId = extractVideoId(movie.trailer, movie.title);
+  // Privacy-friendly youtube-nocookie domain jo localhost par block nahi hota
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+  const youtubeDirectUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
   return (
     <div className="trailer-backdrop" onClick={onClose}>
@@ -72,9 +79,22 @@ const TrailerModal = ({ movie, onClose }) => {
             <h3>{movie.title}</h3>
             <span className="trailer-year">{movie.year}</span>
           </div>
-          <button className="trailer-close-btn" onClick={onClose} title="Close Trailer">
-            ✕
-          </button>
+          
+          <div className="trailer-header-actions">
+            {/* Agar browser ya Adblocker iframe ko block kare toh direct YouTube link */}
+            <a 
+              href={youtubeDirectUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="open-yt-btn"
+              title="Open directly on YouTube"
+            >
+              YouTube ↗
+            </a>
+            <button className="trailer-close-btn" onClick={onClose} title="Close Trailer">
+              ✕
+            </button>
+          </div>
         </div>
 
         <div className="trailer-video-container">
@@ -82,7 +102,8 @@ const TrailerModal = ({ movie, onClose }) => {
             src={embedUrl}
             title={`${movie.title} Trailer`}
             frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           ></iframe>
         </div>

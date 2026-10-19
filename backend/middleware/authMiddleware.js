@@ -27,4 +27,13 @@ const protect = (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+// 🔥 NAYA GUARD: Sirf Admin ko aage jaane dega
+const adminOnly = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next(); // Pass ho gaya
+  } else {
+    res.status(403).json({ message: "Access Denied: Sirf Admin ko hi ijaazat hai! ⛔" });
+  }
+};
+
+module.exports = { protect, adminOnly };

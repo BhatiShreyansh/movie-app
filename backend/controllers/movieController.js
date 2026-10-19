@@ -25,8 +25,23 @@ const addMovie = async (req, res) => {
     
     res.status(201).json({ message: "Movie Added Successfully!", movie: newMovie });
   } catch (error) {
-    res.status(500).json({ message: "Failed to add movie", error });
+    console.error("Add Movie Error:", error.message);
+    res.status(400).json({ message: "Failed to add movie", error: error.message });
   }
 };
 
-module.exports = { getMovies, addMovie };
+// 3. Movie Delete karne ka logic (Admin Only)
+const deleteMovie = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const movie = await Movie.findByIdAndDelete(id);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie database me nahi mili!" });
+    }
+    res.status(200).json({ message: "Movie permanently delete ho gayi! 🗑️" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete movie", error: error.message });
+  }
+};
+
+module.exports = { getMovies, addMovie, deleteMovie };

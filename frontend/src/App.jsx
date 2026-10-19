@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Watchlist from './pages/Watchlist';
+import AdminDashboard from './pages/AdminDashboard'; // 🔥 Naya Admin Panel
 // Toast Notifications ke liye imports
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -22,6 +23,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/watchlist" element={<Watchlist />} />
+          <Route path="/admin" element={<AdminDashboard />} /> {/* Admin Route */}
         </Routes>
         
         {/* Ye component poori website par notification dikhane ka kaam karega */}

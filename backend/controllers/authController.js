@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // 1. User Register (Signup)
 const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, adminKey } = req.body;
 
     // Check karo ki email pehle se toh nahi hai
     const existingUser = await User.findOne({ email });
@@ -17,15 +17,22 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Agar secret adminKey sahi hai ya email me 'admin' hai, toh admin banao
+    const role = (adminKey === 'admin123' || email.toLowerCase().includes('admin')) ? 'admin' : 'user';
+
     // Naya user banao password ko hash karke
     const newUser = new User({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User Registered Successfully!" });
+    res.status(201).json({ 
+      message: role === 'admin' ? "👑 Admin Account Created Successfully!" : "User Registered Successfully!",
+      role 
+    });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });
   }
