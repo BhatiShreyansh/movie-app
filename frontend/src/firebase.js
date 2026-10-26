@@ -1,16 +1,18 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-// Firebase Console (console.firebase.google.com) se mila hua configuration
+// Asali Firebase Configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDemoApiKey1234567890",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "cineverse-demo.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "cineverse-demo",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "cineverse-demo.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1234567890",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1234567890:web:abcdef12345"
+  apiKey: "AIzaSyBeZQqgzjKo9Oxca6jNaZbyRYrMvIUeoyI",
+  authDomain: "cineverse-91c85.firebaseapp.com",
+  projectId: "cineverse-91c85",
+  storageBucket: "cineverse-91c85.firebasestorage.app",
+  messagingSenderId: "6122185312",
+  appId: "1:6122185312:web:b6edf0369a029677a69905",
+  measurementId: "G-8SC7J4R8GK"
 };
 
+// Initialize Firebase App & Auth
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
