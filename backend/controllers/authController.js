@@ -72,4 +72,56 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+// 3. 🔥 NAYA: One-Click Google Login via Firebase
+const firebaseGoogleLogin = async (req, res) => {
+  try {
+    const { name, email, avatar } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required from Google!" });
+    }
+
+    // Check karo kya user pehle se database me hai
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Naya user banao (Google profile data se)
+      const role = email.toLowerCase().includes('admin') ? 'admin' : 'user';
+      const randomPassword = Math.random().toString(36).slice(-8) + 'Fb1!';
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+      user = new User({
+        name: name || email.split('@')[0],
+        email,
+        password: hashedPassword,
+        role
+      });
+
+      await user.save();
+    }
+
+    // Digital Pass (JWT Token) generate karo
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.status(200).json({
+      message: "Google Login Successful! 🎉",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error("Firebase Auth Backend Error:", error);
+    res.status(500).json({ message: "Server error during Google Login", error: error.message });
+  }
+};
+
+module.exports = { register, login, firebaseGoogleLogin };

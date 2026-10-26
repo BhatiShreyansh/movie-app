@@ -132,3 +132,60 @@
   color: #ff4b2b;
   text-shadow: 0 0 12px rgba(255, 65, 108, 0.7);
 }
+
+
+/* Google Auth Divider & Firebase Button */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.8rem 0 1.2rem 0;
+  color: #777;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.auth-divider span {
+  padding: 0 1rem;
+}
+
+.google-auth-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #ffffff;
+  color: #3c4043;
+  border: none;
+  border-radius: 14px;
+  padding: 0.95rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.google-auth-btn img {
+  width: 22px;
+  height: 22px;
+}
+
+.google-auth-btn:hover:not(:disabled) {
+  background: #f1f3f4;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+.google-auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
