@@ -1,13 +1,44 @@
 const Movie = require('../models/Movie');
 
-// 1. Saari Movies lane ka logic (Read)
+// 1. Saari Movies lane ka logic (With Pagination Support & Backward Compatibility)
 const getMovies = async (req, res) => {
   try {
-    // Database se saari movies lao
-    const movies = await Movie.find();
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 8;
+
+    // A. Agar Frontend ne ?page=1 manga hai (Pagination Mode)
+    if (page) {
+      // Formula: (page - 1) * limit
+      // Example: Page 1 => (1-1)*8 = 0 (Pehle 0 movies skip karke agle 8 lao)
+      // Example: Page 2 => (2-1)*8 = 8 (Pehle 8 movies skip karke agle 8 lao)
+      const skip = (page - 1) * limit;
+
+      // Database mein total kitni movies hain
+      const totalMovies = await Movie.countDocuments();
+
+      // Movies fetch karo (Newest movies sabse pehle)
+      const movies = await Movie.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+      const totalPages = Math.ceil(totalMovies / limit);
+      const hasMore = page < totalPages;
+
+      return res.status(200).json({
+        movies,
+        currentPage: page,
+        totalPages,
+        totalMovies,
+        hasMore
+      });
+    }
+
+    // B. Normal Mode (Admin Dashboard ya bina page query ke direct array)
+    const movies = await Movie.find().sort({ createdAt: -1 });
     res.status(200).json(movies);
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error });
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
 
