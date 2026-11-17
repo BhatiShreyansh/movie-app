@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../config';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -34,7 +35,7 @@ const AdminDashboard = () => {
 
   const fetchMovies = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/movies');
+      const response = await fetch(`${API_BASE_URL}/api/movies`);
       const data = await response.json();
       if (response.ok) {
         setMovies(data);
@@ -56,7 +57,7 @@ const AdminDashboard = () => {
 
     setSubmitting(true);
     try {
-      const response = await fetch('http://localhost:5000/api/movies', {
+      const response = await fetch(`${API_BASE_URL}/api/movies`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +100,7 @@ const AdminDashboard = () => {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/movies/${movieId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/movies/${movieId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

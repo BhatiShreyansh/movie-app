@@ -1,5 +1,6 @@
 import React from 'react';
 import { toast } from 'react-toastify';
+import { API_BASE_URL } from '../config';
 import './MovieCard.css';
 
 const MovieCard = ({ movie, onWatchTrailer }) => {
@@ -15,7 +16,7 @@ const MovieCard = ({ movie, onWatchTrailer }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/watchlist', {
+      const response = await fetch(`${API_BASE_URL}/api/watchlist`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
+import { API_BASE_URL } from '../config';
 import './Auth.css';
 
 const Login = () => {
@@ -14,7 +15,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault(); 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -45,7 +46,7 @@ const Login = () => {
       const googleUser = result.user;
 
       // Backend ko send karo taaki JWT token mil sake
-      const response = await fetch('http://localhost:5000/api/auth/google-firebase', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/google-firebase`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
 import TrailerModal from '../components/TrailerModal';
+import { API_BASE_URL } from '../config';
 import './Home.css';
 
 const Home = ({ searchQuery }) => {
@@ -20,7 +21,7 @@ const Home = ({ searchQuery }) => {
       try {
         setLoading(true);
         // Backend se sirf 8 movies mangwayenge
-        const response = await fetch('http://localhost:5000/api/movies?page=1&limit=8');
+        const response = await fetch(`${API_BASE_URL}/api/movies?page=1&limit=8`);
         const data = await response.json();
 
         if (data.movies) {
@@ -52,7 +53,7 @@ const Home = ({ searchQuery }) => {
     try {
       setLoadingMore(true);
       const nextPage = page + 1;
-      const response = await fetch(`http://localhost:5000/api/movies?page=${nextPage}&limit=8`);
+      const response = await fetch(`${API_BASE_URL}/api/movies?page=${nextPage}&limit=8`);
       const data = await response.json();
 
       if (data.movies && data.movies.length > 0) {

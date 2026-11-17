@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import TrailerModal from '../components/TrailerModal'; // Trailer popup
+import { API_BASE_URL } from '../config';
 import './Watchlist.css';
 
 const Watchlist = () => {
@@ -23,7 +24,7 @@ const Watchlist = () => {
 
     const fetchWatchlist = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/watchlist', {
+        const response = await fetch(`${API_BASE_URL}/api/watchlist`, {
           headers: {
             'Authorization': `Bearer ${token}` // Guard ko token dikhaya
           }
@@ -51,7 +52,7 @@ const Watchlist = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/watchlist/${watchlistId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/watchlist/${watchlistId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
