@@ -11,8 +11,8 @@ app.use(cors());
 // express.json() allows our backend to parse JSON request bodies
 app.use(express.json());
 
-// 2. Database Connection (MongoDB Atlas or Local MongoDB)
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/movie_app_db';
+// 2. Database Connection (Railway MONGO_URL, MongoDB Atlas MONGO_URI, or Local MongoDB)
+const MONGO_URI = process.env.MONGO_URI || process.env.MONGO_URL || 'mongodb://localhost:27017/movie_app_db';
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected Successfully!"))
