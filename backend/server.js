@@ -6,19 +6,25 @@ require('dotenv').config();
 const app = express();
 
 // 1. Middlewares
-// CORS allows our frontend (port 5173) to talk to this backend (port 5000)
+// CORS allows frontend (both localhost and deployed domains) to access backend
 app.use(cors());
-// express.json() allows our backend to understand JSON data sent in requests
+// express.json() allows our backend to parse JSON request bodies
 app.use(express.json());
 
-// 2. Database Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB Connected Successfully!"))
-  .catch((err) => console.log("❌ MongoDB Connection Failed:", err));
+// 2. Database Connection (MongoDB Atlas or Local MongoDB)
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/movie_app_db';
 
-// 3. Basic Test Route
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected Successfully!"))
+  .catch((err) => console.error("❌ MongoDB Connection Failed:", err.message));
+
+// 3. Basic Test & Health Check Route
 app.get('/', (req, res) => {
-  res.send('🎬 Movie App Backend is Running!');
+  res.status(200).json({
+    status: "online",
+    message: "🎬 Movie App Backend is Running Live!",
+    timestamp: new Date().toISOString()
+  });
 });
 
 // 4. API Routes (Movie, Auth, and Watchlist)
